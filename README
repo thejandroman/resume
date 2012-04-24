@@ -1,3 +1,3 @@
 login.php can be run from the command line to test some basics of linkedin api calls. All code blatently stolen from linkedin.
 
-It requires the php oath library.
+It requires the php oauth library.
