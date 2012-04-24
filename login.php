@@ -4,7 +4,7 @@
 define("API_CONSUMER_KEY", "j18qrld132fh");
 define("API_CONSUMER_SECRET", "brNqI3MlrdTw37lY");
 
-include("helpers.php")
+include("helpers.php");
 
 // create a new instance of the OAuth PECL extension class
 $oauth = new OAuth(API_CONSUMER_KEY, API_CONSUMER_SECRET);
