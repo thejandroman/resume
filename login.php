@@ -38,3 +38,12 @@ $oauth->fetch($api_url, null, OAUTH_HTTP_METHOD_GET);
 // print_response is just a fancy wrapper around print and is defined later
 // or you can look now and see it in the code download
 print_response($oauth);
+
+print_line("\n********A basic user profile call********");
+$api_url = "http://api.linkedin.com/v1/people/~";
+$oauth->fetch($api_url, null, OAUTH_HTTP_METHOD_GET);
+// JSON
+// $oauth->fetch($api_url, null, OAUTH_HTTP_METHOD_GET, array('x-li-format' => 'json'));
+$response = $oauth->getLastResponse(); // just a sample of how you would get the response
+print_r($response);
+print_response($oauth);
