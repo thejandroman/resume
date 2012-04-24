@@ -41,7 +41,7 @@ print_response($oauth);
 
 print_line("\n********A basic user profile call********");
 $api_url = "http://api.linkedin.com/v1/people/id={$at_info["oauth_token"]}";
-echo $api_url;
+echo "$api_url\n";
 $oauth->fetch($api_url, null, OAUTH_HTTP_METHOD_GET);
 // JSON
 // $oauth->fetch($api_url, null, OAUTH_HTTP_METHOD_GET, array('x-li-format' => 'json'));
