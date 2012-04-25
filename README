@@ -1,3 +1,5 @@
 login.php can be run from the command line to test some basics of linkedin api calls. All code blatently stolen from linkedin.
 
 It requires the php oauth library.
+
+index.html is some sample JSON output for some profile information. Must come from localhost TLD or it won't work.
