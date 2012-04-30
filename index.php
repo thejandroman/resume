@@ -1,4 +1,4 @@
-
+<?php include 'database.php' ?>
 <html>
   <head>
     <script type="text/javascript" src="http://platform.linkedin.com/in.js">
@@ -80,8 +80,5 @@
 		<div id="skills"><strong>SKILLS:</strong><br /></div>
 		<div id="footer"><div id="address"></div></div>
 	</div>
-	<?php 
-include 'database.php'
-?>
   </body>
 </html>
