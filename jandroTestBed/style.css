@@ -1,0 +1,14 @@
+/**{border:1px solid #888888;}*/
+*{font-size:12pt;}
+#resume{
+    width:850px;
+    padding:50px;
+    padding-bottom:100px;
+    border:1px solid #888888;
+}
+.job-header{font-weight:bold;}
+.skill{margin:0px;}
+#footer, #header{text-align:center;}
+.job{margin-bottom:20px;}
+#skills{margin-bottom:20px;}
+#phone, #name, #email{margin:0px 5px;}
