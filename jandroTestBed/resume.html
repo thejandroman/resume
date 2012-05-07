@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <script type="text/javascript" src="http://platform.linkedin.com/in.js">
+      api_key: j18qrld132fh
+      authorize: true
+    </script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script> 
+    <script type="text/javascript" src="./loadData.js"></script>
+    <link rel=stylesheet href="style.css" type="text/css">
+  </head>
+  <body>
+    <script type="in/Login" data-onAuth="loadData"></script>
+    <div id="resume">
+      <div id="resume_header">
+        <span id="phone"></span>&nbsp;<span id="name"></span>&nbsp;<span id="email"></span>
+      </div>
+      <div id="resume_body">
+        <span id="skills"><br /><strong>Skills</strong></span>
+        <span id="positions"><br><strong>Positions</strong></span>
+      </div>
+      <div id="resume_footer">
+        <span id="education"><strong>Education</strong></span><span id="address"></span>
+      </div>
+    </div>
+  </body>
+</html>
