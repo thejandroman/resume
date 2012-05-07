@@ -1,4 +1,17 @@
-<?php include 'database.php' ?>
+<?php include 'database.php';
+$result = mysql_fetch_array(select_templates(), MYSQL_ASSOC);
+echo $result["template"];
+if($result === FALSE) {
+    die(mysql_error()); // TODO: better error handling
+}
+
+//echo $things;
+//foreach($things as $t){
+//	echo $t;}
+//$templates = mysql_fetch_array(select_templates());
+//$template = $templates["template"];
+//string mysql_result ( resource $result , int $row [, mixed $field = 0 ] )
+ ?>
 <html>
   <head>
     <script type="text/javascript" src="http://platform.linkedin.com/in.js">
@@ -8,14 +21,17 @@
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.5b1.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.7/jquery-ui.min.js"></script> 
     <script type="text/javascript">
-      
+      $(document).ready(function(){
       function loadData() {
       IN.API.Profile("me")
       .fields(["id", "publicProfileUrl", "firstName", "lastName",
       "pictureUrl", "headline", "positions", "skills","location:(name)","phone-numbers","main-address","educations"])
       .result(function(result) {
 			$("#profile").html(JSON.stringify(result));
-			var first_name = result.values[0].firstName;
+			$('#template').html(<?php echo $result["template"] ?>);
+		//	$('.firstName').html(result.values[0].firstName);
+			$('.firstName').html('what the fuck');
+			/*var first_name = result.values[0].firstName;
 			var positions = result.values[0].positions.values;
 			var skills = result.values[0].skills.values;
 			var educations= result.values[0].educations.values;
@@ -54,10 +70,10 @@
 				skills[i].skill.name + '</span>, ');
 			}
 			var skills_html = $('#skills').html();
-			$('#skills').html(skills_html.substr(0,skills_html.length-2));
+			$('#skills').html(skills_html.substr(0,skills_html.length-2));*/
       } );
       }
-
+});
     </script>
   </head>
   <body>
@@ -75,10 +91,8 @@
 #skills{margin-bottom:20px;}
 #phone, #name, #email{margin:0px 5px;}
 	</style>
-	<div id="resume">
-		<div id="header"><span id="phone"></span>&nbsp;<span id="name"></span>&nbsp;<span id="email"></span></div>
-		<div id="skills"><strong>SKILLS:</strong><br /></div>
-		<div id="footer"><div id="address"></div></div>
-	</div>
+<div id="template"></div>
+
+
   </body>
 </html>
