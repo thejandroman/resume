@@ -1,16 +1,23 @@
 <?php
+
+print_r($_POST);
+
+/*
 require_once('./tcpdf/config/lang/eng.php');
 require_once('./tcpdf/tcpdf.php');
 
+define ('headerTitle','Resamaze Example');
+define ('headerString',"by the Resamaze Team\nresamaze.ideasftw.com");
+
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
-$pdf->SetCreator(PDF_CREATOR);
+$pdf->SetCreator('Resumaze');
 $pdf->SetAuthor('Resamaze');
 $pdf->SetTitle('Resume');
 $pdf->SetSubject('Resume');
 $pdf->SetKeywords('Resume');
 
-$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 001', PDF_HEADER_STRING);
+$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, headerTitle, headerString);
 
 $pdf->SetHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
 $pdf->SetFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
@@ -23,11 +30,11 @@ $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
 $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
-$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+$pdf->SetImageScale(PDF_IMAGE_SCALE_RATIO);
 
-$pdf->setLanguageArray($l);
+$pdf->SetLanguageArray($l);
 
-$pdf->setFontSubsetting(true);
+$pdf->SetFontSubsetting(true);
 
 $pdf->SetFont('dejavusans', '', 14, '', true);
 
@@ -44,3 +51,4 @@ EOD;
 $pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $html, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
 
 $pdf->Output('example_001.pdf', 'I');
+*/

@@ -31,7 +31,7 @@ function loadData() {
             $('#skills').append('<ul>');
             for(var i = 0; i < skills.length;i++)
             {
-                $('#skills').append('<li class="skill">' + 
+                $('#skills').append('<li class="skill">' +
                                     skills[i].skill.name + '</li>');
             }
             $('#skills').append('</ul>');
@@ -62,13 +62,13 @@ function loadData() {
                     endMonth=endMonth + '/';
                 }
                 $('#positions').after('<div class="job"><div class="job-header"><span class="title">' +
-                                      positions[i].title.toUpperCase() + 
-                                      '</span>, <span class="company">' + 
-                                      positions[i].company.name + 
-                                      '</span>' + location + 
+                                      positions[i].title.toUpperCase() +
+                                      '</span>, <span class="company">' +
+                                      positions[i].company.name +
+                                      '</span>' + location +
                                       ', <span class="work-period">' +
-                                      startMonth + positions[i].startDate.year + (positions[i].endDate ? ' - ' + endMonth + positions[i].endDate.year : ' - Present') + 
-                                      '</div><div class="job-detail">' + 
+                                      startMonth + positions[i].startDate.year + (positions[i].endDate ? ' - ' + endMonth + positions[i].endDate.year : ' - Present') +
+                                      '</div><div class="job-detail">' +
                                       summary.replace(/\n/g, '<br />') + '</div></div>');
             }
 
@@ -82,7 +82,7 @@ function loadData() {
             for(var i = educations.length-1; i >=0 ;i--)
             {
                 $('#education').append('<br><span id="degree">' +
-                                       (educations[i].degree ? educations[i].degree : '') + (educations[i].fieldOfStudy ? (' in ' + educations[i].fieldOfStudy) : '') 
+                                       (educations[i].degree ? educations[i].degree : '') + (educations[i].fieldOfStudy ? (' in ' + educations[i].fieldOfStudy) : '')
                                        + '</span>' + (educations[i].degree || educations[i].fieldOfStudy ? ' from ' : '')
                                        + '<span id="school">'
                                        + educations[i].schoolName
@@ -91,7 +91,10 @@ function loadData() {
 
             // Address
             $('#address').html(result.values[0].mainAddress);
-	    
+
         } );
 }
 
+function submitPDF(elem) {
+    $.post('export.php', $(elem).text());
+}
