@@ -29,12 +29,11 @@ function loadData() {
             // Skills
             var skills = result.values[0].skills.values;
             $('#skills').append('<ul>');
-            for(var i = 0; i < skills.length;i++)
-            {
-                $('#skills').append('<li class="skill">' + 
+            for(var i = 0; i < skills.length;i++) {
+                $('ul').append('<li class="skill">' +
                                     skills[i].skill.name + '</li>');
             }
-            $('#skills').append('</ul>');
+            //$('#skills:li').after('</ul>');
             //var skills_html = $('#skills').html();
             //$('#skills').html(skills_html.substr(0,skills_html.length-2));
 
@@ -62,13 +61,13 @@ function loadData() {
                     endMonth=endMonth + '/';
                 }
                 $('#positions').after('<div class="job"><div class="job-header"><span class="title">' +
-                                      positions[i].title.toUpperCase() + 
-                                      '</span>, <span class="company">' + 
-                                      positions[i].company.name + 
-                                      '</span>' + location + 
+                                      positions[i].title.toUpperCase() +
+                                      '</span>, <span class="company">' +
+                                      positions[i].company.name +
+                                      '</span>' + location +
                                       ', <span class="work-period">' +
-                                      startMonth + positions[i].startDate.year + (positions[i].endDate ? ' - ' + endMonth + positions[i].endDate.year : ' - Present') + 
-                                      '</div><div class="job-detail">' + 
+                                      startMonth + positions[i].startDate.year + (positions[i].endDate ? ' - ' + endMonth + positions[i].endDate.year : ' - Present') +
+                                      '</div><div class="job-detail">' +
                                       summary.replace(/\n/g, '<br />') + '</div></div>');
             }
 
@@ -82,7 +81,7 @@ function loadData() {
             for(var i = educations.length-1; i >=0 ;i--)
             {
                 $('#education').append('<br><span id="degree">' +
-                                       (educations[i].degree ? educations[i].degree : '') + (educations[i].fieldOfStudy ? (' in ' + educations[i].fieldOfStudy) : '') 
+                                       (educations[i].degree ? educations[i].degree : '') + (educations[i].fieldOfStudy ? (' in ' + educations[i].fieldOfStudy) : '')
                                        + '</span>' + (educations[i].degree || educations[i].fieldOfStudy ? ' from ' : '')
                                        + '<span id="school">'
                                        + educations[i].schoolName
@@ -91,7 +90,54 @@ function loadData() {
 
             // Address
             $('#address').html(result.values[0].mainAddress);
-	    
+
         } );
 }
 
+function submitPDF2(elem){
+    var data1 = $(elem).html();
+    $("form").submit(function(){
+        $("input:hidden").val() = $(elem).html();
+        document.myForm.submit();
+    });
+}
+
+function submitPDF(elem) {
+    var data1 = $(elem).html();
+    //var data2 = data1.text();
+    post_to_url("export.php", {"html" : data1});
+    //$.post('export.php', {html : data1}, function(data){
+    //var myWindow = window.open('', 'my div', 'height=400,width=600');
+    //myWindow.document.write(data);
+    //myWindow.document.close();
+    //myWindow.print();
+    //});
+    //, function(data){
+    //alert("Data Loaded: " + data);
+    //});
+    //$('#pdf').appemd('<pre>' + pdf.text() + '</pre>');
+}
+
+function post_to_url(path, params, method) {
+    method = method || "post"; // Set method to post by default, if not specified.
+
+    // The rest of this code assumes you are not using a library.
+    // It can be made less wordy if you use one.
+    var form = document.createElement("form");
+    form.setAttribute("method", method);
+    form.setAttribute("action", path);
+
+    for(var key in params) {
+        if(params.hasOwnProperty(key)) {
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", key);
+            hiddenField.setAttribute("value", params[key]);
+
+            form.appendChild(hiddenField);
+        }
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+}
