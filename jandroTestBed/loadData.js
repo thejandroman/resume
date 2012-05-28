@@ -31,7 +31,7 @@ function loadData() {
             $('#skills').append('<ul>');
             for(var i = 0; i < skills.length;i++) {
                 $('ul').append('<li class="skill">' +
-                                    skills[i].skill.name + '</li>');
+                               skills[i].skill.name + '</li>');
             }
             //$('#skills:li').after('</ul>');
             //var skills_html = $('#skills').html();
@@ -102,20 +102,14 @@ function submitPDF2(elem){
     });
 }
 
-function submitPDF(elem) {
-    var data1 = $(elem).html();
-    //var data2 = data1.text();
-    post_to_url("export.php", {"html" : data1});
-    //$.post('export.php', {html : data1}, function(data){
-    //var myWindow = window.open('', 'my div', 'height=400,width=600');
-    //myWindow.document.write(data);
-    //myWindow.document.close();
-    //myWindow.print();
-    //});
-    //, function(data){
-    //alert("Data Loaded: " + data);
-    //});
-    //$('#pdf').appemd('<pre>' + pdf.text() + '</pre>');
+function submitPDF(htmlDiv,css) {
+    var data1 = $(htmlDiv).html();
+    if(typeof css === 'undefined'){
+        post_to_url("export.php", {"html" : data1});
+        return;
+    }
+    var data2 = css;
+    post_to_url("export.php", {"html" : data1 , "css" : data2});
 }
 
 function post_to_url(path, params, method) {

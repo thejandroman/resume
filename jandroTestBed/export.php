@@ -29,10 +29,15 @@ $pdf->SetFont('dejavusans', '', 14, '', true);
 
 $pdf->AddPage();
 
-$html = "{$_POST['html']}";
-//$html2 = trim($html);
+$html = "";
+if (!empty($_POST['css'])){
+  $css = file_get_contents($_POST['css']);
+  $html .= "<style>";
+  $html .= $css;
+  $html .= "</style>";
+}
 
-//var_dump($html);
+$html .= "{$_POST['html']}";
 
 $pdf->writeHTML($html, true, false, true, false , '');
 //$pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $_POST['html'], $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
