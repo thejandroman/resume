@@ -13,18 +13,19 @@ if($result === false)
 <script type="in/Login" data-onAuth="loadData"></script>
   <style>
   /**{border:1px solid #888888;}*/
-  *{font-size:12pt;}
-  #resume{width:850px;padding:50px;padding-bottom:100px;border:1px solid #888888;}
+  *{font-size:12pt;font-family:Calibri;}
+  #resume{width:612px;height:792px;padding:50px;padding-bottom:100px;border:1px solid #888888;}
   .position{font-weight:bold;}
   .position .summary{font-weight:normal;}
   .skill{margin:0px;}
+  .skills{margin-bottom:20px;}
   #footer, #header{text-align:center;}
-  .job{margin-bottom:20px;}
   #skills{margin-bottom:20px;}
   #phone, #name, #email{margin:0px 5px;}
+  .position{margin-bottom:20px;}
   </style>
   <div id="profile"></div>
-<div id="template"><?php echo  "'".$template."'" ?></div>
+<div id="template"></div>
 <script type="text/javascript" src="http://platform.linkedin.com/in.js">
 /*api_key: j18qrld132fh
   authorize: true*/
@@ -75,86 +76,97 @@ function loadData()
 		var resume_template = {};
 		$(document).ready(function ()
 		{
-			//var templates = $('#resume').html().match(/\[\[[template:[a-zA-Z\.]+(\((.)+?\))*(\]\])/g); 
-			var templates = $('#resume').html().match(/\[\[(.)*?template:(.)*?\]\]/g);
-			for (var i = 0; i < templates.length; i++)
+			var bracket_count = 0;
+			//find the first open bracket
+			//find the next bracket, if open, add to count, if closed, subtract from count
+			//{templates:[{name:'educations.degree'}, {name:'educations.fieldOfStudy', ender:' from '}, {name:'educations.schoolName'}, {name:'educations.endDate.year'}]}
+			var json_templates = new Array();
+			var template_html = <?php echo "'".$template."'" ?>;
+			var json_string = <?php echo "'".$template."'" ?> ;
+			var json_string = json_string.substring(json_string.indexOf('{'));
+			while (json_string.indexOf('}') > 0)
 			{
-				if (resume_template[templates[i]] === undefined) resume_template[templates[i]] = new Array();
-				//document.write(templates[i] + '<br />');
-				var fudged_template = templates[i].match(/\[(.)*?template:(.)*?\]/g);
-				var replacement = ''
-				for (var j = 0; j < fudged_template.length; j++)
+				for (var i = 0; i < json_string.length; i++)
 				{
-					var template = fudged_template[j].replace('[[', '[').replace(']]', ']');
-					var parameters = template.match(/\((.)+?\)/g);
-					var beginner = '';
-					var ender = '';
-					if (parameters)
+					if (json_string[i] == '{') bracket_count++;
+					if (json_string[i] == '}') bracket_count--;
+					if (bracket_count == 0)
 					{
-						if (parameters[1])
-						{
-							beginner = parameters[0].replace('(', '').replace(')', '');
-							ender = parameters[1].replace('(', '').replace(')', '');
-						}
-						else ender = parameters[0].replace('(', '').replace(')', '');
+						var json_template = json_string.substring(0, i + 1)
+						json_templates.push($.parseJSON(json_template));
+						json_string = json_string.substring(i + 1);
+						json_string = json_string.substring(json_string.indexOf('{'));
+						break;
 					}
-					var template_name = template;
-					template_name = template_name.substring(template_name.indexOf('template:')+9);
-					if(template_name.indexOf('(') != -1)
-					{
-						template_name = template_name.substring(0, template_name.indexOf('('));
-					}
-					else
-					{
-						template_name = template_name.replace(']','');
-					}
-
-					resume_template[templates[i]].push(
-					{
-						beginner: beginner,
-						ender: ender,
-						template: template,
-						template_name: template_name
-					});
 				}
-				//document.write(templates[i] + '<br/ >' + replacement + '<br />');
-				//$('#resume').html($('#resume').html().replace(templates[i], replacement));
-				//document.write(templates[i]);
+			}
+			for (var i = 0; i < json_templates.length; i++)
+			{
+				//document.write(JSON.stringify(json_templates[i]));
 			}
 			var profile = ''
-			//$('#profile').html($('#resume').html());
-			for (key in resume_template)
+			for (var i = 0; i < json_templates.length; i++)
 			{
-				var replacement = '';
-				var j = 0;
-				//for each super-template, see if its first entry template has a value at the value index
-				while (!!values[resume_template[key][0].template_name] && !!values[resume_template[key][0].template_name][j])
+				var template_chunk = json_templates[i];
+				var replacement = ''; //document.write(JSON.stringify(template_chunk));
+				if ( !! template_chunk.template_group)
 				{
-					for (var i = 0; i < resume_template[key].length; i++)
+					var template_chunk_beginner = template_chunk.template_group.beginner;
+					var templates = template_chunk.template_group.templates;
+					var template_chunk_ender = template_chunk.template_group.ender;
+					var k = 0;
+					while (values[templates[0].template.name][k] !== undefined)
 					{
-					if(values[resume_template[key][i].template_name])
-							replacement += (resume_template[key][i].beginner ? resume_template[key][i].beginner : '') + (values[resume_template[key][i].template_name][j] ? values[resume_template[key][i].template_name][j] : '') + (resume_template[key][i].ender ? resume_template[key][i].ender : '');
+										replacement += (template_chunk_beginner ? template_chunk_beginner : '');
+
+						for (var j = 0; j < templates.length; j++)
+						{
+							var template_beginner = templates[j].template.beginner;
+							var name = templates[j].template.name;
+							var template_ender = templates[j].template.ender;
+							if (values[name]) replacement += (values[name][k] ? (template_beginner ? template_beginner : '') + values[name][k] + (template_ender ? template_ender : ''): '');
+						}
+						k++;
+											replacement += (template_chunk_ender ? template_chunk_ender : '');
+
 					}
-					j++;
 				}
-				$('#resume').html($('#resume').html().replace(key, replacement));
-			}
-			for (key in values)
-			{
-				for (var i = 0; i < values[key].length; i++)
+				else if ( !! template_chunk.template)
 				{
-					//profile += key + '<br />' + values[key][i] + '<br />';
+					var template_beginner = template_chunk.template.beginner;
+					var name = template_chunk.template.name;
+					var template_ender = template_chunk.template.ender;
+					var k = 0;
+					while (values[name][k] !== undefined)
+					{
+						if (values[name])
+						{
+							replacement += (values[name][k] ? (template_beginner ? template_beginner : '') + values[name][k] + (template_ender ? template_ender : ''):'');
+						}
+						k++;
+					}
 				}
-			}
-			for (key in resume_template)
-			{
-				//profile += "key: " + key + '<br />';
-				for (var i = 0; i < resume_template[key].length; i++)
+				else if ( !! template_chunk.name)
 				{
-					profile += 'resume_template[key][i]: '+ (resume_template[key][i].beginner ? resume_template[key][i].beginner : '') + resume_template[key][i].template_name +(resume_template[key][i].ender ? resume_template[key][i].ender : '') +  '<br />';
+					var name = template_chunk.name;
+					var k = 0;
+					if (values[name])
+					{
+						while (values[name][k] !== undefined)
+						{
+							replacement += values[name][k];
+							k++;
+						}
+					}
 				}
+				var template_chunk_string = JSON.stringify(template_chunk);
+				//alert(template_html);
+				template_html = template_html.replace(template_chunk_string, replacement.replace(/&quot;/g, '"').replace(/;/g, '<br />'));
+				//$('#template').html($('#template').html().replace(JSON.stringify(template_chunk), replacement));
+				profile += template_chunk_string+ '<br />' + replacement.replace(/&quot;/g, '"') + '<br />';
 			}
-			$('#profile').html(profile);
+			$('#template').html(template_html);
+			//$('#profile').html(profile);
 		});
 	});
 }
