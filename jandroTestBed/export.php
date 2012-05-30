@@ -44,3 +44,4 @@ $pdf->writeHTML($html, true, false, true, false , '');
 
 //ob_clean();
 $pdf->Output('resume.pdf', 'D');
+?>

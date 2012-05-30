@@ -6,38 +6,54 @@ function onLinkedInAuth() {
     window.location="resume.html";
 }
 
+function openCheck(elem) {
+    var form = '<form action=""><input type=checkbox name="' + elem + '" />';
+    return form;
+}
+
+function closeCheck() {
+    var form = '</form>';
+    return form;
+}
+
 function loadData() {
         IN.API.Profile("me")
         .fields(["id", "publicProfileUrl", "firstName", "lastName",
-                 "pictureUrl", "headline", "positions", "skills","location:(name)","phone-numbers","main-address","educations"])
-        .result(function(result) {
-            //$("#profile").html(JSON.stringify(result));
+                 "pictureUrl", "headline", "positions", "skills",
+                 "location:(name)","phone-numbers","main-address","educations"])
 
-            // Header
-            //var first_name = result.values[0].firstName;
-            $('#name').html(result.values[0].firstName + ' ' + result.values[0].lastName);
-            //$('#email').html('singularityneuromancer@gmail.com'); // Can we pull this from the .raw() call? Nope. We can't
+        .result(function(result) {
+            // Name
+            var formOpen = openCheck("name");
+            var formClose = closeCheck();
+            $('#name').html(formOpen + result.values[0].firstName + ' ' +
+                            result.values[0].lastName + formClose);
 
             // Phone
+            var formOpen = openCheck("phone");
+            var formClose = closeCheck();
             var phoneNumberTotal = result.values[0].phoneNumbers._total;
             if (phoneNumberTotal==0) {
-                $('#phone').html('');
+                $('#phone').html(formOpen + 'Phone Number' + formClose);
             } else {
-                $('#phone').html(result.values[0].phoneNumbers.values[0].phoneNumber);
+                $('#phone').html(formOpen +
+                                 result.values[0].phoneNumbers.values[0].phoneNumber
+                                + formClose);
             }
 
             // Skills
+            var formOpen = openCheck("skills");
+            var formClose = closeCheck();
             var skills = result.values[0].skills.values;
-            $('#skills').append('<ul>');
+            $('#skills').append(formOpen + '<ul>' + formClose);
             for(var i = 0; i < skills.length;i++) {
-                $('ul').append('<li class="skill">' +
-                               skills[i].skill.name + '</li>');
+                $('ul').append('<li class="skill">' + formOpen +
+                               skills[i].skill.name + formClose + '</li>');
             }
-            //$('#skills:li').after('</ul>');
-            //var skills_html = $('#skills').html();
-            //$('#skills').html(skills_html.substr(0,skills_html.length-2));
 
             // Positions
+            var formOpen = openCheck("positions");
+            var formClose = closeCheck();
             var positions = result.values[0].positions.values;
             for(var i = positions.length - 1; i >=0  ;i--)
             {
@@ -49,10 +65,12 @@ function loadData() {
                 if (location==undefined) {
                     location = '';
                 } else {
-                    location = ', <span class="location">' + location + '</span>';
+                    location = ', <span class="location">' + location +
+                        '</span>';
                 }
                 var startMonth = positions[i].startDate.month;
-                var endMonth = positions[i].endDate ? positions[i].endDate.month : '';
+                var endMonth = positions[i].endDate ? positions[i].endDate.month
+                    : '';
                 if (startMonth==undefined && !endMonth) {
                     startMonth='';
                     endMonth='';
@@ -60,18 +78,24 @@ function loadData() {
                     startMonth=startMonth + '/';
                     endMonth=endMonth + '/';
                 }
-                $('#positions').after('<div class="job"><div class="job-header"><span class="title">' +
-                                      positions[i].title.toUpperCase() +
+                $('#positions').after(formOpen +
+                                      '<div class="job"><div class="job-header"><span class="title">'
+                                      + positions[i].title.toUpperCase() +
                                       '</span>, <span class="company">' +
-                                      positions[i].company.name +
-                                      '</span>' + location +
-                                      ', <span class="work-period">' +
-                                      startMonth + positions[i].startDate.year + (positions[i].endDate ? ' - ' + endMonth + positions[i].endDate.year : ' - Present') +
-                                      '</div><div class="job-detail">' +
-                                      summary.replace(/\n/g, '<br />') + '</div></div>');
+                                      positions[i].company.name + '</span>' +
+                                      location + ', <span class="work-period">'
+                                      + startMonth + positions[i].startDate.year
+                                      + (positions[i].endDate ? ' - ' + endMonth
+                                         + positions[i].endDate.year :
+                                         ' - Present')
+                                      + '</div><div class="job-detail">' +
+                                      summary.replace(/\n/g, '<br />') +
+                                      '</div></div>' + formClose);
             }
 
             // Education
+            var formOpen = openCheck("education");
+            var formClose = closeCheck();
             var educationsTotal = result.values[0].educations._total;
             if (educationsTotal>0) {
                 var educations= result.values[0].educations.values;
@@ -80,26 +104,28 @@ function loadData() {
             }
             for(var i = educations.length-1; i >=0 ;i--)
             {
-                $('#education').append('<br><span id="degree">' +
-                                       (educations[i].degree ? educations[i].degree : '') + (educations[i].fieldOfStudy ? (' in ' + educations[i].fieldOfStudy) : '')
-                                       + '</span>' + (educations[i].degree || educations[i].fieldOfStudy ? ' from ' : '')
-                                       + '<span id="school">'
-                                       + educations[i].schoolName
-                                       + '</span><span id="graduation-date">' +(educations[i].endDate ? ((educations[i].endDate.year ? ' ,' + educations[i].endDate.year : 'end year')) : '')  + '</span>');
+                $('#education').append('<br>' + formOpen + '<span id="degree">'
+                                       + (educations[i].degree ?
+                                        educations[i].degree : '') +
+                                       (educations[i].fieldOfStudy ?
+                                        (' in ' + educations[i].fieldOfStudy) :
+                                        '') + '</span>' +
+                                       (educations[i].degree ||
+                                        educations[i].fieldOfStudy ? ' from ' :
+                                        '') + '<span id="school">' +
+                                       educations[i].schoolName +
+                                       '</span><span id="graduation-date">' +
+                                       (educations[i].endDate ?
+                                        ((educations[i].endDate.year ? ' ,' +
+                                          educations[i].endDate.year :
+                                          'end year')) : '')  + '</span>' +
+                                       formClose);
             }
 
             // Address
             $('#address').html(result.values[0].mainAddress);
 
         } );
-}
-
-function submitPDF2(elem){
-    var data1 = $(elem).html();
-    $("form").submit(function(){
-        $("input:hidden").val() = $(elem).html();
-        document.myForm.submit();
-    });
 }
 
 function submitPDF(htmlDiv,css) {
@@ -113,10 +139,8 @@ function submitPDF(htmlDiv,css) {
 }
 
 function post_to_url(path, params, method) {
-    method = method || "post"; // Set method to post by default, if not specified.
+    method = method || "post";
 
-    // The rest of this code assumes you are not using a library.
-    // It can be made less wordy if you use one.
     var form = document.createElement("form");
     form.setAttribute("method", method);
     form.setAttribute("action", path);
