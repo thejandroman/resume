@@ -4,6 +4,7 @@ if($result === false)
 	die(mysql_error());
 	$templates = mysql_fetch_array($result,MYSQL_ASSOC);
 	$template = $templates["template"];
+	$css = $templates["css"];
 ?>
 <html>
 <head>
@@ -11,18 +12,8 @@ if($result === false)
 </head>
 <body>
 <script type="in/Login" data-onAuth="loadData"></script>
-  <style>
-  /**{border:1px solid #888888;}*/
-  *{font-size:12pt;font-family:Calibri;}
-  #resume{width:612px;height:792px;padding:50px;padding-bottom:100px;border:1px solid #888888;}
-  .position{font-weight:bold;}
-  .position .summary{font-weight:normal;}
-  .skill{margin:0px;}
-  .skills{margin-bottom:20px;}
-  #footer, #header{text-align:center;}
-  #skills{margin-bottom:20px;}
-  #phone, #name, #email{margin:0px 5px;}
-  .position{margin-bottom:20px;}
+  <style type="text/css">
+ <?php echo $css ?>
   </style>
   <div id="profile"></div>
 <div id="template"></div>
@@ -161,6 +152,7 @@ function loadData()
 				}
 				var template_chunk_string = JSON.stringify(template_chunk);
 				//alert(template_html);
+				if(!!replacement)
 				template_html = template_html.replace(template_chunk_string, replacement.replace(/&quot;/g, '"').replace(/;/g, '<br />'));
 				//$('#template').html($('#template').html().replace(JSON.stringify(template_chunk), replacement));
 				profile += template_chunk_string+ '<br />' + replacement.replace(/&quot;/g, '"') + '<br />';
@@ -171,7 +163,41 @@ function loadData()
 	});
 }
      
+function submitPDF(htmlDiv,css) {
+    var data1 = $(htmlDiv).html();
+    if(typeof css === 'undefined'){
+        post_to_url("export.php", {"html" : data1});
+        return;
+    }
+    var data2 = css;
+    post_to_url("./jandrotestbed/export.php", {"html" : data1 , "css" : data2});
+}
 
+function post_to_url(path, params, method) {
+    method = method || "post"; // Set method to post by default, if not specified.
+
+    // The rest of this code assumes you are not using a library.
+    // It can be made less wordy if you use one.
+    var form = document.createElement("form");
+    form.setAttribute("method", method);
+    form.setAttribute("action", path);
+
+    for(var key in params) {
+        if(params.hasOwnProperty(key)) {
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", key);
+            hiddenField.setAttribute("value", params[key]);
+
+            form.appendChild(hiddenField);
+        }
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+}
   </script>
+      <a href="javascript: submitPDF('#resume','./style.css')">Export as PDF</a>
+
   </body>
   </html>
