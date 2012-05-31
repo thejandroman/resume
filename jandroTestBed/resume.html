@@ -10,20 +10,8 @@
     <!--<link rel=stylesheet href="style.css" type="text/css">-->
   </head>
   <body>
-    <script type="in/Login" data-onAuth="loadData"></script>
-    <div id="resume">
-      <div id="resume_header">
-        <span id="phone"></span>&nbsp;<span id="name"></span>&nbsp;<span id="email"></span>
-      </div>
-      <div id="resume_body">
-        <span id="skills"><br /><strong>Skills</strong></span>
-        <span id="positions"><br><strong>Positions</strong></span>
-      </div>
-      <div id="resume_footer">
-        <span id="education"><strong>Education</strong></span><span id="address"></span>
-      </div>
-    </div>
+    <script type="in/Login" data-onAuth="buildResume"></script>
+    <div id="resume"></div>
     <a href="javascript: submitPDF('#resume','./style.css')">Export as PDF</a>
-    <div id="pdf"></div>
   </body>
 </html>

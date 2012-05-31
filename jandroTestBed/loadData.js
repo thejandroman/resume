@@ -6,54 +6,84 @@ function onLinkedInAuth() {
     window.location="resume.html";
 }
 
-function openCheck(elem) {
-    var form = '<form action=""><input type=checkbox name="' + elem + '" />';
+function openForm(action){
+    var form = '<form action="' + action + '">';
     return form;
 }
 
-function closeCheck() {
+function check(name) {
+    var form = '<input type=checkbox name="' + name + '" checked="checked" />';
+    return form;
+}
+
+function closeForm() {
     var form = '</form>';
     return form;
 }
 
-function loadData() {
+function buildResume() {
         IN.API.Profile("me")
         .fields(["id", "publicProfileUrl", "firstName", "lastName",
                  "pictureUrl", "headline", "positions", "skills",
                  "location:(name)","phone-numbers","main-address","educations"])
-
         .result(function(result) {
-            // Name
-            var formOpen = openCheck("name");
-            var formClose = closeCheck();
-            $('#name').html(formOpen + result.values[0].firstName + ' ' +
-                            result.values[0].lastName + formClose);
+
+            // Build initial divs
+            $('<form/>', {
+                id: "resamaze"
+                ,action: "something"
+            }).prependTo("#resume");
+            $('#resamaze').append('<div id="resumeHeader">');
+            $('#resamaze').append('<div id="resumeBody">');
+            $('#resamaze').append('<div id="resumeFooter">');
+
+            //Build Header Spans
+            $('#resumeHeader').append('<span id="phone">');
+            $('#resumeHeader').append('<span id="name">');
+            $('#resumeHeader').append('<span id="email">');
+
+            //Build Body Spans
+            $('<span/>', {
+                id: "skills"
+                ,html: "<strong>Skills</strong>"
+            }).appendTo('#resumeBody');
+            $('<span/>', {
+                id: "positions"
+                ,html: "<strong>Positions</strong>"
+            }).appendTo('#resumeBody');
+
+            //Build Footer Spans
+            $('<span/>', {
+                id: "education"
+                ,html: "<strong>Education</strong>"
+            }).appendTo('#resumeFooter');
+            $('#resumeFooter').append('<span id="address">');
+
+            // Add Full Name
+            var fullName = result.values[0].firstName+' '+result.values[0].lastName;
+            $('#name').append(check("name") + fullName);
 
             // Phone
-            var formOpen = openCheck("phone");
-            var formClose = closeCheck();
             var phoneNumberTotal = result.values[0].phoneNumbers._total;
             if (phoneNumberTotal==0) {
-                $('#phone').html(formOpen + 'Phone Number' + formClose);
+                $('#phone').append(check("phone") + 'Phone Number');
             } else {
-                $('#phone').html(formOpen +
-                                 result.values[0].phoneNumbers.values[0].phoneNumber
-                                + formClose);
+                var phone = result.values[0].phoneNumbers.values[0].phoneNumber;
+                $('#phone').append(check("phone") + phone);
             }
 
             // Skills
-            var formOpen = openCheck("skills");
-            var formClose = closeCheck();
             var skills = result.values[0].skills.values;
-            $('#skills').append(formOpen + '<ul>' + formClose);
+            $('#skills').prepend(check("skills"));
+            $('#skills').append('<ul>');
             for(var i = 0; i < skills.length;i++) {
-                $('ul').append('<li class="skill">' + formOpen +
-                               skills[i].skill.name + formClose + '</li>');
+                $('<li/>', {
+                    class: "skill"
+                    ,html: skills[i].skill.name
+                }).appendTo('ul');
             }
 
             // Positions
-            var formOpen = openCheck("positions");
-            var formClose = closeCheck();
             var positions = result.values[0].positions.values;
             for(var i = positions.length - 1; i >=0  ;i--)
             {
@@ -78,24 +108,24 @@ function loadData() {
                     startMonth=startMonth + '/';
                     endMonth=endMonth + '/';
                 }
-                $('#positions').after(formOpen +
-                                      '<div class="job"><div class="job-header"><span class="title">'
-                                      + positions[i].title.toUpperCase() +
-                                      '</span>, <span class="company">' +
-                                      positions[i].company.name + '</span>' +
-                                      location + ', <span class="work-period">'
-                                      + startMonth + positions[i].startDate.year
-                                      + (positions[i].endDate ? ' - ' + endMonth
-                                         + positions[i].endDate.year :
-                                         ' - Present')
-                                      + '</div><div class="job-detail">' +
-                                      summary.replace(/\n/g, '<br />') +
-                                      '</div></div>' + formClose);
+                $('#positions').after(
+                    check('#positions') + '<div class="job">'
+                        + '<div class="job-header"><span class="title">'
+                        + positions[i].title.toUpperCase() +
+                        '</span>, <span class="company">' +
+                        positions[i].company.name + '</span>' +
+                        location + ', <span class="work-period">'
+                        + startMonth + positions[i].startDate.year
+                        + (positions[i].endDate ? ' - ' + endMonth
+                           + positions[i].endDate.year :
+                           ' - Present')
+                        + '</div><div class="job-detail">' +
+                        summary.replace(/\n/g, '<br />') +
+                        '</div></div>');
             }
 
             // Education
-            var formOpen = openCheck("education");
-            var formClose = closeCheck();
+            var formOpen = check("education");
             var educationsTotal = result.values[0].educations._total;
             if (educationsTotal>0) {
                 var educations= result.values[0].educations.values;
@@ -104,9 +134,10 @@ function loadData() {
             }
             for(var i = educations.length-1; i >=0 ;i--)
             {
-                $('#education').append('<br>' + formOpen + '<span id="degree">'
+                $('#education').prepend(check("education"));
+                $('#education').append('<span id="degree">'
                                        + (educations[i].degree ?
-                                        educations[i].degree : '') +
+                                          educations[i].degree : '') +
                                        (educations[i].fieldOfStudy ?
                                         (' in ' + educations[i].fieldOfStudy) :
                                         '') + '</span>' +
@@ -118,8 +149,7 @@ function loadData() {
                                        (educations[i].endDate ?
                                         ((educations[i].endDate.year ? ' ,' +
                                           educations[i].endDate.year :
-                                          'end year')) : '')  + '</span>' +
-                                       formClose);
+                                          'end year')) : '')  + '</span>');
             }
 
             // Address
