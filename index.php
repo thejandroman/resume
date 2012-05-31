@@ -8,13 +8,15 @@ if($result === false)
 ?>
 <html>
 <head>
-
+  <style type="text/css" id="css">
+ <?php echo $css ?>
+  </style>
 </head>
 <body>
 <script type="in/Login" data-onAuth="loadData"></script>
-  <style type="text/css">
- <?php echo $css ?>
-  </style>
+
+        <a href="javascript: submitPDF('#resume','#css')">Export as PDF</a>
+
   <div id="profile"></div>
 <div id="template"></div>
 <script type="text/javascript" src="http://platform.linkedin.com/in.js">
@@ -158,6 +160,17 @@ function loadData()
 				profile += template_chunk_string+ '<br />' + replacement.replace(/&quot;/g, '"') + '<br />';
 			}
 			$('#template').html(template_html);
+			var css = $('#css').text();
+			var declarations = css.split('}');
+			for (var i = 0;i<declarations.length;i++)
+			{
+				var element_name = declarations[i].substring(0, declarations[i].indexOf('{')).replace(/\n/g,'').replace(/\t/g, '').replace(/\r/g, '').replace(/ /g, '');
+				var css_properties = declarations[i].substring(declarations[i].indexOf('{') + 1).split(';');
+				for(var j = 0; j < css_properties.length;j++)
+				{
+					$(element_name).css(css_properties[j].split(':')[0], css_properties[j].split(':')[1]);
+				}
+			}
 			//$('#profile').html(profile);
 		});
 	});
@@ -165,6 +178,7 @@ function loadData()
      
 function submitPDF(htmlDiv,css) {
     var data1 = $(htmlDiv).html();
+	var data2 = $(css).text();
     if(typeof css === 'undefined'){
         post_to_url("export.php", {"html" : data1});
         return;
@@ -197,7 +211,6 @@ function post_to_url(path, params, method) {
     form.submit();
 }
   </script>
-      <a href="javascript: submitPDF('#resume','./style.css')">Export as PDF</a>
 
   </body>
   </html>

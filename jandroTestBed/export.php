@@ -13,9 +13,9 @@ $pdf->SetKeywords('Resume');
 $pdf->SetPrintHeader(false);
 $pdf->SetPrintFooter(false);
 
-$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+//$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
-$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+//$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
 
 $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
@@ -23,15 +23,23 @@ $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 $pdf->setLanguageArray($l);
 
-$pdf->setFontSubsetting(true);
+//$pdf->setFontSubsetting(true);
 
-$pdf->SetFont('dejavusans', '', 14, '', true);
+//$pdf->SetFont('dejavusans', '', 14, '', true);
 
 $pdf->AddPage();
 
 $html = "";
 if (!empty($_POST['css'])){
-  $css = file_get_contents($_POST['css']);
+  $css = '';
+  if(is_file($_POST['css']))
+  {
+	$css = file_get_contents($_POST['css']);
+  }
+  else
+  {
+	$css = $_POST['css'];
+  }
   $html .= "<style>";
   $html .= $css;
   $html .= "</style>";
