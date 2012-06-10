@@ -13,21 +13,14 @@ if($result === false)
   </style>
 </head>
 <body>
-<script type="in/Login" data-onAuth="loadData"></script>
-
-        <a href="javascript: submitPDF('#resume','#css')">Export as PDF</a>
-
-  <div id="profile"></div>
+<!--<a href="javascript: submitPDF('#resume','#css')">Export as PDF</a>-->
+<a id="export" href="javascript: submitPDF($(CKEDITOR.instances.template.getData()).html())">Export as PDF</a>
+<div id="profile"></div>
 <div id="template"></div>
-<script type="text/javascript" src="http://platform.linkedin.com/in.js">
-/*api_key: j18qrld132fh
-  authorize: true*/
-  api_key: q166216s6ikx
-  authorize: true
-  </script>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script> 
-  <script type="text/javascript">
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script> 
+<script type="text/javascript" src="./ckeditor/ckeditor.js"></script>
+<script type="text/javascript">
 function loadData()
 {
 	IN.API.Profile("me").fields(["id", "publicProfileUrl", "firstName", "lastName", "pictureUrl", "headline", "positions", "skills", "location:(name)", "phone-numbers", "main-address", "educations"]).result(function (result)
@@ -74,7 +67,7 @@ function loadData()
 			//find the next bracket, if open, add to count, if closed, subtract from count
 			//{templates:[{name:'educations.degree'}, {name:'educations.fieldOfStudy', ender:' from '}, {name:'educations.schoolName'}, {name:'educations.endDate.year'}]}
 			var json_templates = new Array();
-			var template_html = <?php echo "'".$template."'" ?>;
+			var template_html = <?php echo "'".$template."'" ?> ;
 			var json_string = <?php echo "'".$template."'" ?> ;
 			var json_string = json_string.substring(json_string.indexOf('{'));
 			while (json_string.indexOf('}') > 0)
@@ -104,37 +97,87 @@ function loadData()
 				var replacement = ''; //document.write(JSON.stringify(template_chunk));
 				if ( !! template_chunk.template_group)
 				{
-					var template_chunk_beginner = template_chunk.template_group.beginner;
+					var template_chunk_wrapper = template_chunk.template_group.wrapper;
 					var templates = template_chunk.template_group.templates;
-					var template_chunk_ender = template_chunk.template_group.ender;
+					var template_chunk_separator = template_chunk.template_group.separator;
 					var k = 0;
 					while (values[templates[0].template.name][k] !== undefined)
 					{
-										replacement += (template_chunk_beginner ? template_chunk_beginner : '');
-
+						var unwrapped_replacement = '';
 						for (var j = 0; j < templates.length; j++)
 						{
-							var template_beginner = templates[j].template.beginner;
+							var template_wrapper = templates[j].template.wrapper;
 							var name = templates[j].template.name;
-							var template_ender = templates[j].template.ender;
-							if (values[name]) replacement += (values[name][k] ? (template_beginner ? template_beginner : '') + values[name][k] + (template_ender ? template_ender : ''): '');
+							var next_template_name = '';
+							if (templates[j + 1]) next_template_name = templates[j + 1].template.name;
+							var template_separator = templates[j].template.separator;
+							if (values[name])
+							{
+								var use_separator = false;
+								for (var l = (j+1); l < templates.length; l++)
+								{
+									if (template_separator)
+									{
+										var next_template = templates[l].template.name;
+										var next_template_wrapper = templates[l].template.wrapper;
+										if (next_template)
+										{
+											var next_template_value_array = values[next_template];
+											if (next_template_value_array)
+											{
+												var next_template_value = next_template_value_array[k];
+												if (next_template_value && next_template_wrapper && next_template_wrapper.indexOf('div') == -1)
+												{
+													use_separator = true;
+													break;
+												}
+											}
+										}
+									}
+								}
+								if (template_wrapper)
+								{
+									var template_element = $(template_wrapper.replace(/&quot;/g, '"'));
+									template_element.html((values[name][k] ? values[name][k] + (use_separator ? template_separator : '') : ''));
+									unwrapped_replacement += template_element.clone().wrap('<p>').parent().html();
+								}
+								else
+								{
+
+									unwrapped_replacement += (values[name][k] ? values[name][k] + (use_separator ? template_separator : '') : '');
+								}
+							}
 						}
 						k++;
-											replacement += (template_chunk_ender ? template_chunk_ender : '');
-
+						if (template_chunk_wrapper)
+						{
+							var template_chunk_element = $(template_chunk_wrapper.replace(/&quot;/g, '"'));
+							template_chunk_element.html(unwrapped_replacement);
+							unwrapped_replacement = template_chunk_element.clone().wrap('<p>').parent().html();
+						}
+						replacement += unwrapped_replacement + (template_chunk_separator ? template_chunk_separator : '');
 					}
 				}
 				else if ( !! template_chunk.template)
 				{
-					var template_beginner = template_chunk.template.beginner;
+					var template_wrapper = template_chunk.template.wrapper;
 					var name = template_chunk.template.name;
-					var template_ender = template_chunk.template.ender;
+					var template_separator = template_chunk.template.separator;
 					var k = 0;
 					while (values[name][k] !== undefined)
 					{
 						if (values[name])
 						{
-							replacement += (values[name][k] ? (template_beginner ? template_beginner : '') + values[name][k] + (template_ender ? template_ender : ''):'');
+							if (template_wrapper)
+							{
+								var element = $(template_wrapper);
+								element.html((values[name][k] ? values[name][k] + ((template_separator && values[name][k + 1]) ? template_separator : '') : ''));
+								replacement += element.clone().wrap('<p>').parent().html();
+							}
+							else
+							{
+								replacement += (values[name][k] ? values[name][k] + ((template_separator && values[name][k + 1]) ? template_separator : '') : '')
+							}
 						}
 						k++;
 					}
@@ -154,33 +197,39 @@ function loadData()
 				}
 				var template_chunk_string = JSON.stringify(template_chunk);
 				//alert(template_html);
-				if(!!replacement)
-				template_html = template_html.replace(template_chunk_string, replacement.replace(/&quot;/g, '"').replace(/;/g, '<br />'));
+				if ( !! replacement)
+				{
+					var replacement_html = replacement.replace(/&quot;/g, '"').replace(/;/g, '<br />');
+					replacement_html = replacement_html.replace(/<br \/><\/div>/g, '</div>');
+					template_html = template_html.replace(template_chunk_string, replacement_html);
+				}
 				//$('#template').html($('#template').html().replace(JSON.stringify(template_chunk), replacement));
-				profile += template_chunk_string+ '<br />' + replacement.replace(/&quot;/g, '"') + '<br />';
+				profile += template_chunk_string + '<br />' + replacement.replace(/&quot;/g, '"') + '<br />';
 			}
 			$('#template').html(template_html);
 			var css = $('#css').text();
 			var declarations = css.split('}');
-			for (var i = 0;i<declarations.length;i++)
+			for (var i = 0; i < declarations.length; i++)
 			{
-				var element_name = declarations[i].substring(0, declarations[i].indexOf('{')).replace(/\n/g,'').replace(/\t/g, '').replace(/\r/g, '').replace(/ /g, '');
+				var element_name = declarations[i].substring(0, declarations[i].indexOf('{')).replace(/\n/g, '').replace(/\t/g, '').replace(/\r/g, '');
 				var css_properties = declarations[i].substring(declarations[i].indexOf('{') + 1).split(';');
-				for(var j = 0; j < css_properties.length;j++)
+				for (var j = 0; j < css_properties.length; j++)
 				{
 					$(element_name).css(css_properties[j].split(':')[0], css_properties[j].split(':')[1]);
 				}
 			}
-			//$('#profile').html(profile);
+				
+			//$('#profile').html($('#template').clone().html());
+			CKEDITOR.replace( 'template' );
 		});
 	});
 }
      
-function submitPDF(htmlDiv,css) {
-    var data1 = $(htmlDiv).html();
+function submitPDF(html,css) {
+    var data1 = html;
 	var data2 = $(css).text();
     if(typeof css === 'undefined'){
-        post_to_url("export.php", {"html" : data1});
+        post_to_url("./jandrotestbed/export.php", {"html" : data1});
         return;
     }
     var data2 = css;
@@ -211,6 +260,12 @@ function post_to_url(path, params, method) {
     form.submit();
 }
   </script>
-
+<script type="in/Login" data-onAuth="loadData"></script>
+<script type="text/javascript" src="http://platform.linkedin.com/in.js">
+/*api_key: j18qrld132fh
+  authorize: true*/
+  api_key: q166216s6ikx
+  authorize: true
+  </script>
   </body>
   </html>
