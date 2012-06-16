@@ -1,3 +1,5 @@
+
+
 <?php include 'database.php';
 $result = select_templates();
 if($result === false)
@@ -15,7 +17,9 @@ if($result === false)
 <body>
 <!--<a href="javascript: submitPDF('#resume','#css')">Export as PDF</a>-->
 <a id="export" href="javascript: submitPDF($(CKEDITOR.instances.template.getData()).html())">Export as PDF</a>
+<a id="export" href="javascript: submitWord($(CKEDITOR.instances.template.getData()).html())">Export as Word</a>
 <div id="profile"></div>
+
 <div id="template"></div>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script> 
@@ -234,6 +238,17 @@ function submitPDF(html,css) {
     }
     var data2 = css;
     post_to_url("./jandrotestbed/export.php", {"html" : data1 , "css" : data2});
+}
+
+function submitWord(html,css) {
+    var data1 = html;
+	var data2 = $(css).text();
+    if(typeof css === 'undefined'){
+        post_to_url("./jandrotestbed/export.php?format=docx", {"html" : data1});
+        return;
+    }
+    var data2 = css;
+    post_to_url("./jandrotestbed/export.php?format=docx", {"html" : data1 , "css" : data2});
 }
 
 function post_to_url(path, params, method) {

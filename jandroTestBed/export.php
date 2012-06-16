@@ -1,4 +1,21 @@
 <?php
+$format = $_GET["format"];
+if($format == "docx")
+{
+ob_end_clean();
+header("Content-type: application/vnd.ms-word");
+header("Content-Disposition: attachment;Filename=document_name.doc");
+
+echo "<html>";
+echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=Windows-1252\">";
+echo "<body>";
+echo $_POST["html"];
+echo "</body>";
+echo "</html>";
+}
+else
+{
+ob_end_clean();
 require_once('./tcpdf/config/lang/eng.php');
 require_once('./tcpdf/tcpdf.php');
 
@@ -52,4 +69,5 @@ $pdf->writeHTML($html, true, false, true, false , '');
 
 //ob_clean();
 $pdf->Output('resume.pdf', 'D');
+}
 ?>
